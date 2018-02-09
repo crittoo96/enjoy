@@ -1,0 +1,102 @@
+<html>
+
+<head>
+    <title>bit-pic</title>
+    <meta charset="utf-8">
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: gray;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+        
+        #colorBox {
+            width: 100px;
+            height: 30px;
+            background-color: black;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="">
+        <canvas id="canvas"></canvas>
+        <input type="file" id="upload">
+    </div>
+    <div id="colorBox"></div>
+    <button onclick="checkColor();">check color</button>
+    <script>
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        $(function() {
+            $('#canvas').click(function(evt) {
+                // alert(evt.offsetX);
+                // alert(evt.offsetY);
+                $(this).width
+                var mouseX = parseInt(evt.offsetX);
+                var mouseY = parseInt(evt.offsetY);
+                var imagedata = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+                var data = imagedata.data;
+                // rgba で4つあるから4かけ
+                var i = ((mouseY * canvas.width) + mouseX) * 4;
+
+                var r = data[i];
+                var g = data[i + 1];
+                var b = data[i + 2];
+                var a = data[i + 3];
+
+                $('#colorBox').css(
+                    'background-color', 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')'
+                );
+            });
+            $('#upload').change(function() {
+                var file = this.files[0];
+                var image = new Image();
+                var reader = new FileReader();
+
+                reader.onload = function(evt) {
+                    image.onload = function() {
+                        var dw, dh;
+                        var dimension = 1000;
+
+                        if ((image.width > dimension) || (image.height > dimension)) {
+                            if (image.width > image.height) {
+                                // scale width to fit, adjust height
+                                dw = parseInt(image.width * (dimension / image.width));
+                                dh = parseInt(image.height * (dimension / image.width));
+                            } else {
+                                dh = parseInt(image.height * (dimension / image.height));
+                                dw = parseInt(image.width * (dimension / image.height));
+                            }
+                            canvas.width = dw;
+                            canvas.height = dh;
+                            ctx.drawImage(image, 0, 0, dw, dh);
+                        } else {
+                            canvas.width = image.width;
+                            canvas.height = image.height;
+                            ctx.drawImage(image, 0, 0);
+                        }
+                        // $("#canvas").attr("width", image.width);
+                        // $("#canvas").attr("height", image.height);
+
+                        // ctx.drawImage(image, 0, 0, dw, dh);
+                    }
+                    image.src = evt.target.result;
+                }
+                reader.readAsDataURL(file);
+            });
+        });
+        var checkColor = function() {
+            alert($('body').css('background-color'));
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,74 @@
+<html>
+
+<head>
+    <title>bit-pic</title>
+    <meta charset="utf-8">
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: gray;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="">
+        <canvas id="canvas"></canvas>
+        <input type="file" id="upload">
+    </div>
+    <button onclick="getImage();">check color</button>
+</body>
+<script>
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext("2d");
+    var image = document.createElement("img");
+
+    function getImage() {
+        var imgSrc = document.getElementById("upload").value;
+
+        if (imgSrc == "") {
+            // Get first example
+            // imgSrc = rootPath + samplefiles[0];
+            // document.getElementById("upload").value = imgSrc;
+        }
+        image.src = imgSrc;
+
+        // image.complete
+        image.addEventListener('load', function() {
+            var dimension = 380;
+            var dw;
+            var dh;
+
+            // set max dimension
+            if ((image.width > dimension) || (image.height > dimension)) {
+                if (image.width > image.height) {
+                    // scale width to fit, adjust height
+                    dw = parseInt(image.width * (dimension / image.width));
+                    dh = parseInt(image.height * (dimension / image.width));
+                } else {
+                    dh = parseInt(image.height * (dimension / image.height));
+                    dw = parseInt(image.width * (dimension / image.height));
+                }
+                canvas.width = dw;
+                canvas.height = dh;
+            } else {
+                canvas.width = image.width;
+                canvas.height = image.height;
+            }
+            ctx.drawImage(image, 0, 0, dw, dh);
+            setBorder();
+        }, false);
+    }
+    var checkColor = function() {
+        alert($('body').css('background-color'));
+    }
+</script>
+
+</html>
