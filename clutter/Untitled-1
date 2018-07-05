@@ -1,0 +1,17 @@
+reservation_id
+address
+name
+edit_token
+passport_id
+country_name
+sex
+age
+occupation
+place_from
+place_to
+phone_number
+error_messages_ids
+is_registered
+is_authorized
+is_in_japan
+is_checked

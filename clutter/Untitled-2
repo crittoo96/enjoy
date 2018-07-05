@@ -1,0 +1,1 @@
+Guest.create(reservation_id: 12, address: "address", age: 21,edit_token: "", is_authorized: false, is_in_japan: true, is_registered: true, name: "kobuside", phone_number: '010101011')
