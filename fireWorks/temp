@@ -1,0 +1,49 @@
+SELECT 
+DATE_FORMAT(U1.created, '%Y-%m-%d') AS time, 
+COUNT(*) AS all_count,
+(SELECT COUNT(*) FROM users AS U2 WHERE U2.created = U1.created and U2.graduatedYear = 4) AS g2018,
+(SELECT COUNT(*) FROM users AS U2 WHERE U2.created = U1.created and U2.graduatedYear = 5) AS g2019,
+(SELECT COUNT(*) FROM users AS U2 WHERE U2.created = U1.created and U2.graduatedYear = 6) AS g2020,
+(SELECT COUNT(*) FROM users AS U2 WHERE U2.created = U1.created and U2.graduatedYear = 7) AS g2021,
+(SELECT COUNT(*) FROM users AS U2 WHERE U2.created = U1.created and U2.graduatedYear = 8) AS g2022,
+(SELECT COUNT(*) FROM users AS U2 WHERE U2.created = U1.created and U2.invite_type = 4) AS advertise,
+(SELECT COUNT(*) FROM users AS U2 WHERE U2.created = U1.created and U2.invite_type != 0) AS invite
+FROM users AS U1
+WHERE U1.created >= DATE_SUB(NOW(),INTERVAL 1 YEAR) 
+GROUP BY DATE_FORMAT(U1.created, '%Y%m%d')
+ORDER BY U1.created DESC;
+
+delimiter //
+create procedure loop_insert_user(in x int)
+begin
+declare max_id int;
+declare i int;
+set i = 0;
+select max(id) into max_id from users;
+while i < x do
+set i = i + 1
+INSERT INTO `users` ( `emailAddress`, `facebookId`, `facebookAccessToken`, `password`, `name`, `last_name`, `first_name`, `rubi`, `last_name_rubi`, `first_name_rubi`, `sex`, `birthday`, `phoneNumber`, `cellPhoneNumber`, `cellPhoneAddress`, `prefecture`, `address`, `zipCode`, `course`, `universityId`, `departmentType`, `departmentId1`, `departmentId2`, `universityString`, `department1String`, `department2String`, `grade`, `simpleIntroduction`, `selfIntroduction`, `internExperience`, `languageSkill`, `specialSkill`, `graduatedYear`, `created`, `modified`, `dm`, `dmToEmail`, `dmToCellPhone`, `offered`, `offeredText`, `hobby`, `invitedBy`, `invite_type`, `invite_id`, `is_deleted`, `point`, `tutorial`) VALUES
+('admin@futurelabo.com', '', '', 'e4fe334dc5ed088a60e6fe498ed6f71cbdf41982', '管理者　あｄみｎ', '管理者', 'あｄみｎ', 'アドミン　アドミン', 'アドミン', 'アドミン', 1, '2017-04-21', '23423432', '234', 'admin@futurelabo.com', 1, '23423432', '2134234', 1, 0, 8, 0, 0, 'sonota', '未来を研究する学部', '未来学科', '03', '', '管理者用アカウントです。', 'インターン経験', '言語スキル', 'その他スキル', 4, '2015-02-01 10:26:22', '2018-04-03 13:06:29', 0, 1, 1, 0, '', '', 'ああああ', 0, 0, 0, 11000, 0);
+end while;
+end
+//
+
+explain SELECT 
+DATE_FORMAT(U1.created, '%m/%d') AS time, 
+COUNT(*) AS all_count,
+(SELECT COUNT(*) FROM users AS U2 WHERE U2.graduatedYear = 4 AND U2.created BETWEEN CAST(U1.created AS DATE) AND CAST(U1.created AS DATE) + INTERVAL 1 DAY) AS g2018,
+(SELECT COUNT(*) FROM users AS U2 WHERE U2.graduatedYear = 5 AND U2.created BETWEEN CAST(U1.created AS DATE) AND CAST(U1.created AS DATE) + INTERVAL 1 DAY) AS g2019,
+(SELECT COUNT(*) FROM users AS U2 WHERE U2.graduatedYear = 6 AND U2.created = U1.created) AS g2020,
+(SELECT COUNT(*) FROM users AS U2 WHERE U2.graduatedYear = 7 AND U2.created = U1.created) AS g2021,
+(SELECT COUNT(*) FROM users AS U2 WHERE U2.graduatedYear = 8 AND U2.created = U1.created) AS g2022,
+(SELECT COUNT(*) FROM users AS U2 WHERE U2.invite_type = 4 AND U2.created = U1.created) AS advertise,
+(SELECT COUNT(*) FROM users AS U2 WHERE U2.invite_type != 0 AND U2.created = U1.created) AS invite
+FROM users AS U1
+WHERE U1.created BETWEEN DATE_FORMAT( ADDDATE( CURDATE() , INTERVAL -1 MONTH) , '%Y-%m-01' ) AND  LAST_DAY( ADDDATE( CURDATE() , INTERVAL -1 MONTH))
+GROUP BY DATE_FORMAT(U1.created, '%Y-%m-%d')
+ORDER BY U1.created DESC;
+
+ alter table users add index index_created_on_users(created);
+
+INSERT INTO `users` ( `emailAddress`, `facebookId`, `facebookAccessToken`, `password`, `name`, `last_name`, `first_name`, `rubi`, `last_name_rubi`, `first_name_rubi`, `sex`, `birthday`, `phoneNumber`, `cellPhoneNumber`, `cellPhoneAddress`, `prefecture`, `address`, `zipCode`, `course`, `universityId`, `departmentType`, `departmentId1`, `departmentId2`, `universityString`, `department1String`, `department2String`, `grade`, `simpleIntroduction`, `selfIntroduction`, `internExperience`, `languageSkill`, `specialSkill`, `graduatedYear`, `created`, `modified`, `dm`, `dmToEmail`, `dmToCellPhone`, `offered`, `offeredText`, `hobby`, `invitedBy`, `invite_type`, `invite_id`, `is_deleted`, `point`, `tutorial`) VALUES
+( 'admin@futurelabo.com', '', '', 'e4fe334dc5ed088a60e6fe498ed6f71cbdf41982', '管理者　あｄみｎ', '管理者', 'あｄみｎ', 'アドミン　アドミン', 'アドミン', 'アドミン', 1, '2017-04-21', '23423432', '234', 'admin@futurelabo.com', 1, '23423432', '2134234', 1, 0, 8, 0, 0, 'sonota', '未来を研究する学部', '未来学科', '03', '', '管理者用アカウントです。', 'インターン経験', '言語スキル', 'その他スキル', 4, '2015-02-01 10:26:22', '2018-04-03 13:06:29', 0, 1, 1, 0, '', '', 'ああああ', 0, 0, 0, 11000, 0);
